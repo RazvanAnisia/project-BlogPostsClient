@@ -4,6 +4,9 @@ import './App.scss';
 import { ToastContainer, toast } from 'react-toastify';
 import Loader from 'react-loader-spinner';
 import Error from './components/Error';
+import BlogList from './components/BlogList';
+import SortButton from './components/SortButton';
+import Form from './components/Form';
 
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import 'react-toastify/dist/ReactToastify.css';
@@ -69,11 +72,6 @@ class App extends React.Component {
       });
   }
 
-  formatDate(date) {
-    const formattedDate = new Date(date);
-    return formattedDate.toDateString();
-  }
-
   handleFormReset = () => {
     this.setState({
       formState: 'post',
@@ -93,9 +91,8 @@ class App extends React.Component {
   };
 
   handlePostSelect = id => {
-    this.formRef.current.scrollIntoView({ behavior: 'smooth' });
+    this.formRef.current.scrollIntoView({ block: 'end', behavior: 'smooth' });
     const selectedPost = this.state.apiData.find(el => el['_id'] === id);
-    //console.log(selectedPost);
     this.updateRef.current.focus();
     //update the state of the form
 
@@ -167,7 +164,7 @@ class App extends React.Component {
     }
   };
   render() {
-    // console.log(this.state);
+    console.log(this.state);
 
     if (this.state.appError) {
       return (
@@ -177,7 +174,7 @@ class App extends React.Component {
         </div>
       );
     }
-    if (this.state.isLoading) {
+    if (!this.state.apiData) {
       return (
         <div className="app-container">
           <ToastContainer className="toast-notification" />
@@ -196,67 +193,26 @@ class App extends React.Component {
       <div className="app-container">
         <ToastContainer className="toast-notification" />
         <h2 ref={this.formRef}>Blog Posts</h2>
-        <p>{this.state.selectedPostId ? 'Update the post' : 'Add a post'}</p>
-        <div className="form-container">
-          <form onSubmit={e => this.handleFormSubmit(e)}>
-            <input
-              ref={this.updateRef}
-              value={this.state.titleValue}
-              onChange={e => this.handleTitleChange(e)}
-              placeholder="Title"
-              type="text"
-              name="tile"
-            />
-            <br />
-            <textarea
-              value={this.state.descriptionValue}
-              onChange={e => this.handleDescriptionChange(e)}
-              placeholder="Your blog post goes here"
-              name="description"></textarea>
-            <br />
-            <button className="add-btn" type="submit">
-              Add Post
-            </button>
-          </form>
-          {this.state.selectedPostId ? (
-            <button className="cancel-btn" onClick={this.handleFormReset}>
-              Cancel Update
-            </button>
-          ) : null}
-        </div>
-        <button onClick={this.handleSortByDate} className="sort-btn">
-          See
-          {this.state.sortChronologically ? (
-            <span className="sort-param"> OLDEST</span>
-          ) : (
-            <span className="sort-param"> LATEST</span>
-          )}
-        </button>
-        <div className="posts-container">
-          {this.state.apiData &&
-            this.state.apiData.map(el => (
-              <div className="post-card" key={el['_id']}>
-                <h3>{el.title}</h3>
-                <p>{el.description}</p>
-                <p className="date-details">
-                  Originally posted on: {this.formatDate(el.date)}
-                </p>
-                <span
-                  className="delete-btn"
-                  onClick={() => this.handleDeleteClick(el['_id'])}>
-                  x
-                </span>
-                <a className="read-more-btn" href={'#'}>
-                  Read More
-                </a>
-                <button
-                  className="btn"
-                  onClick={() => this.handlePostSelect(el['_id'])}>
-                  Update post
-                </button>
-              </div>
-            ))}
-        </div>
+        <Form
+          titleValue={this.state.titleValue}
+          descriptionValue={this.state.descriptionValue}
+          updateRef={this.updateRef}
+          selectedPostId={this.state.selectedPostId}
+          handleFormSubmit={this.handleFormSubmit}
+          handleTitleChange={this.handleTitleChange}
+          handleFormReset={this.handleFormReset}
+          handleDescriptionChange={this.handleDescriptionChange}
+        />
+        <SortButton
+          handleSortByDate={this.handleSortByDate}
+          sortChronologically={this.state.sortChronologically}
+        />
+
+        <BlogList
+          data={this.state.apiData}
+          handleDeleteClick={this.handleDeleteClick}
+          handlePostSelect={this.handlePostSelect}
+        />
       </div>
     );
   }
