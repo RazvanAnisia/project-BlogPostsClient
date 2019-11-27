@@ -1,25 +1,25 @@
-import React from 'react';
-import './App.scss';
+import React from "react";
+import "./App.scss";
 
-import { ToastContainer, toast } from 'react-toastify';
-import Loader from 'react-loader-spinner';
-import Error from './components/Error';
-import BlogList from './components/BlogList';
-import SortButton from './components/SortButton';
-import Form from './components/Form';
+import { ToastContainer, toast } from "react-toastify";
+import Loader from "react-loader-spinner";
+import Error from "./components/Error";
+import BlogList from "./components/BlogList";
+import SortButton from "./components/SortButton";
+import Form from "./components/Form";
 
-import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
-import 'react-toastify/dist/ReactToastify.css';
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
+import "react-toastify/dist/ReactToastify.css";
 
-const url = 'https://enigmatic-depths-64837.herokuapp.com/posts';
+const url2 = "https://enigmatic-depths-64837.herokuapp.com/posts";
 
 class App extends React.Component {
   state = {
     apiData: null,
-    titleValue: '',
-    descriptionValue: '',
-    formState: 'post',
-    selectedPostId: '',
+    titleValue: "",
+    descriptionValue: "",
+    formState: "post",
+    selectedPostId: "",
     sortChronologically: false,
     isLoading: true,
     appError: false
@@ -38,27 +38,27 @@ class App extends React.Component {
       .then(res => this.setState({ apiData: res, isLoading: false }))
       .catch(err => {
         this.setState({ appError: true });
-        toast('There was an error fetching the posts');
+        toast("There was an error fetching the posts");
       });
   }
 
   deletePost(id) {
     fetch(`${url}/${id}`, {
-      method: 'DELETE'
+      method: "DELETE"
     })
       .then(() => this.fetchApiData())
-      .then(() => console.log('deletedPost'))
+      .then(() => console.log("deletedPost"))
       .catch(err => {
         this.setState({ appError: true });
-        toast('There was an error', err);
+        toast("There was an error", err);
       });
   }
 
   updatePost() {
     fetch(`${url}/${this.state.selectedPostId}`, {
-      method: 'PATCH',
+      method: "PATCH",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
         title: this.state.titleValue,
@@ -68,15 +68,15 @@ class App extends React.Component {
       .then(() => this.fetchApiData())
       .catch(err => {
         this.setState({ appError: true });
-        toast('There was an error', err);
+        toast("There was an error", err);
       });
   }
 
   handleFormReset = () => {
     this.setState({
-      formState: 'post',
-      titleValue: '',
-      descriptionValue: '',
+      formState: "post",
+      titleValue: "",
+      descriptionValue: "",
       selectedPostId: null
     });
   };
@@ -91,22 +91,22 @@ class App extends React.Component {
   };
 
   handlePostSelect = id => {
-    this.formRef.current.scrollIntoView({ block: 'end', behavior: 'smooth' });
-    const selectedPost = this.state.apiData.find(el => el['_id'] === id);
+    this.formRef.current.scrollIntoView({ block: "end", behavior: "smooth" });
+    const selectedPost = this.state.apiData.find(el => el["_id"] === id);
     this.updateRef.current.focus();
     //update the state of the form
 
     this.setState({
-      formState: 'update',
+      formState: "update",
       titleValue: selectedPost.title,
       descriptionValue: selectedPost.description,
-      selectedPostId: selectedPost['_id']
+      selectedPostId: selectedPost["_id"]
     });
   };
 
   formValidation = () => {
     if (!this.state.titleValue || !this.state.descriptionValue) {
-      toast('Please add a title and a description', { autoClose: 2000 });
+      toast("Please add a title and a description", { autoClose: 2000 });
       return false;
     } else {
       return true;
@@ -116,12 +116,12 @@ class App extends React.Component {
     e.preventDefault();
     // console.log(this.state);
     if (this.formValidation()) {
-      if (this.state.formState === 'post') {
+      if (this.state.formState === "post") {
         fetch(url, {
-          method: 'POST',
-          mode: 'cors',
+          method: "POST",
+          mode: "cors",
           headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json"
           },
           body: JSON.stringify({
             title: this.state.titleValue,
@@ -130,17 +130,17 @@ class App extends React.Component {
         })
           .then(() => {
             this.setState({
-              titleValue: '',
-              descriptionValue: ''
+              titleValue: "",
+              descriptionValue: ""
             });
             this.fetchApiData();
-            toast('Post added', { autoClose: 2000 });
+            toast("Post added", { autoClose: 2000 });
             //  console.log('form was submitted');
           })
           .catch(err => toast(err, { autoClose: 2000 }));
-      } else if (this.state.formState === 'update') {
+      } else if (this.state.formState === "update") {
         this.updatePost();
-        toast('Post updated', { autoClose: 2000 });
+        toast("Post updated", { autoClose: 2000 });
         //   console.log('form was submitted');
       }
     }
